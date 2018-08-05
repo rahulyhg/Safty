@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#5B9DC1</color>
+    <color name="colorPrimaryDark">#4A4D5D</color>
+    <color name="colorAccent">#fb9d0a</color>
+    <color name="primary_material_light">#573261</color>
+    <color name="primary_dark_material_light">#2d0945</color>
+    <color name="accent_material_light">#fb9d0a</color>
+    <color name="mapPrimaryDark">#4d4d4d</color>
+    <color name="mapPrimary">#737272</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="black_alpha_40">#66000000</color>
+    <color name="colorMarker">#5B9DC1</color>
+</resources>
