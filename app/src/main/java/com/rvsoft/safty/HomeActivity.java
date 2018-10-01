@@ -41,6 +41,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -50,6 +51,7 @@ import com.google.android.gms.tasks.Task;
 import com.rvsoft.safty.app.App;
 import com.rvsoft.safty.app.BaseActivity;
 import com.rvsoft.safty.helper.Constant;
+import com.rvsoft.safty.helper.Helper;
 import com.rvsoft.safty.helper.PermissionHelper;
 import com.rvsoft.safty.interfaces.OnPermissionListener;
 
@@ -61,11 +63,12 @@ import java.lang.reflect.Method;
 import java.text.MessageFormat;
 
 import static com.rvsoft.safty.helper.Constant.REQUESTS.ALL;
+import static com.rvsoft.safty.helper.Constant.REQUESTS.ENABLE_GPS;
 import static com.rvsoft.safty.helper.Constant.REQUESTS.LOCATION;
 
 public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
 
-    private static final long DURATION_TRANSITION_MS = 400;
+    private static final long DURATION_TRANSITION_MS = 300;
     private PermissionHelper permission;
     private Activity mActivity;
     private GoogleMap map;
@@ -112,8 +115,44 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
                 changeContentVisibility();
             }
         });
-        askForPermission();
-        initMap();
+        //askForPermission();
+        askForGPSPermission();
+        //initMap();
+    }
+
+    private void askForGPSPermission() {
+        try {
+            permission.checkAndAskPermission(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION, new OnPermissionListener() {
+                @Override
+                public void onPermissionGranted() {
+                    initMap();
+                }
+
+                @Override
+                public void onPermissionDenied() {
+                    new FancyAlertDialog.Builder(mActivity)
+                            .setimageResource(R.drawable.ic_gps)
+                            .setTextSubTitle("\"HelpO\" Would like to Use Your Location!")
+                            .setBody("HelpO finds helps for you exact nearby you\nChoose Allow so the app can find your location")
+                            .setPositiveButtonText("Grant Access")
+                            .setNegativeButtonText("Cancel")
+                            .setOnPositiveClicked(new FancyAlertDialog.OnPositiveClicked() {
+                                @Override
+                                public void OnClick(View view, Dialog dialog) {
+                                    askForGPSPermission();
+                                }
+                            })
+                            .setOnNegativeClicked(new FancyAlertDialog.OnNegativeClicked() {
+                                @Override
+                                public void OnClick(View view, Dialog dialog) {
+                                    finish();
+                                }
+                            }).build().show();
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void initMap() {
@@ -221,12 +260,14 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMapStyle(MapStyleOptions.loadRawResourceStyle(mActivity, R.raw.google_light_map));
-
-        permission.checkAndAskPermission(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION, new OnPermissionListener() {
+        map.setMyLocationEnabled(true);
+        detectLocation();
+        /*permission.checkAndAskPermission(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION, new OnPermissionListener() {
             @SuppressLint("MissingPermission")
             @Override
             public void onPermissionGranted() {
@@ -252,7 +293,7 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
                             }
                         }).show();
             }
-        });
+        });*/
 
     }
 
@@ -296,6 +337,7 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
                                         .anchor(0.5f, 0.5f)
                                         .title(name)
                                         .snippet(address)
+                                        .icon(BitmapDescriptorFactory.fromBitmap(Helper.getPoliceStationMarker(mActivity)))
                                 );
                             }
                         }

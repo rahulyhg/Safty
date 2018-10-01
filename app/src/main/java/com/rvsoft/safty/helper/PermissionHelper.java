@@ -44,6 +44,8 @@ public class PermissionHelper {
         return !isPermissionNeeded() || isPermissionGranted;
     }
 
+
+
     public void checkAndAskPermission(final String[] permission, int requestCode, OnPermissionListener listener){
         this.callback = listener;
         this.REQUEST_CODE = requestCode;
