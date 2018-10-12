@@ -9,6 +9,10 @@ import android.view.View;
 
 import com.rvsoft.safty.R;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 
 public class Helper {
@@ -24,5 +28,11 @@ public class Helper {
             drawable.draw(canvas);
         view.draw(canvas);
         return bitmap;
+    }
+
+    public static String getCurrentDateTime(){
+        Calendar now = Calendar.getInstance();
+        DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm");
+        return dateFormat.format(now.getTime());
     }
 }

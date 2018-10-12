@@ -26,6 +26,8 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.animation.Interpolator;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -48,8 +50,17 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.rvsoft.safty.app.App;
 import com.rvsoft.safty.app.BaseActivity;
+import com.rvsoft.safty.geofire.GeoFire;
+import com.rvsoft.safty.geofire.GeoLocation;
+import com.rvsoft.safty.geofire.GeoQuery;
+import com.rvsoft.safty.geofire.GeoQueryDataEventListener;
 import com.rvsoft.safty.helper.Constant;
 import com.rvsoft.safty.helper.Helper;
 import com.rvsoft.safty.helper.PermissionHelper;
@@ -61,6 +72,9 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import static com.rvsoft.safty.helper.Constant.REQUESTS.ALL;
 import static com.rvsoft.safty.helper.Constant.REQUESTS.ENABLE_GPS;
@@ -76,22 +90,29 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
     private Window window;
     private RequestQueue requestQueue;
 
-    private View upperContent;
-    private View bottomContent;
-    private ImageButton nearPolice;
+    @BindView(R.id.upper_content)
+    View upperContent;
+    @BindView(R.id.bottom_content)
+    View bottomContent;
+    @BindView(R.id.nearby_police)
+    ImageButton nearPolice;
+    @BindView(R.id.locationUpdate)
+    TextView helpo;
 
 
     private Interpolator contentInInterpolator;
     private Interpolator contentOutInterpolator;
     private boolean isOpen = false;
 
+    private DatabaseReference ref;
+    private GeoFire geoFire;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        ButterKnife.bind(this);
         if (getSupportActionBar()!=null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -103,11 +124,9 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
         mActivity = this;
         permission = new PermissionHelper(mActivity);
         requestQueue = Volley.newRequestQueue(mActivity);
-
-        upperContent = findViewById(R.id.upper_content);
-        bottomContent = findViewById(R.id.bottom_content);
-        nearPolice = findViewById(R.id.nearby_police);
-
+        FirebaseApp.initializeApp(this);
+        ref = FirebaseDatabase.getInstance().getReference("/location");
+        geoFire = new GeoFire(ref);
 
         nearPolice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,10 +134,22 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
                 changeContentVisibility();
             }
         });
+
+        helpo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getNearbyPolice();
+            }
+        });
         //askForPermission();
         askForGPSPermission();
+
+
+
         //initMap();
     }
+
+
 
     private void askForGPSPermission() {
         try {
@@ -233,6 +264,52 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
                 .start();
     }
 
+    @SuppressLint("MissingPermission")
+    private void getNearbyPolice() {
+        Awareness.getSnapshotClient(mActivity).getLocation().addOnCompleteListener(new OnCompleteListener<LocationResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<LocationResponse> task) {
+                if (task.isSuccessful()){
+                    location = task.getResult().getLocation();
+                    GeoLocation geoLocation = new GeoLocation(location.getLatitude(),location.getLongitude());
+                    GeoQuery geoQuery = geoFire.queryAtLocation(geoLocation,0.6);
+                    geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
+                        @Override
+                        public void onDataEntered(DataSnapshot dataSnapshot, GeoLocation location) {
+                            Toast.makeText(mActivity, dataSnapshot.getKey(), Toast.LENGTH_SHORT).show();
+                            Log.d("TAG",dataSnapshot.getKey());
+                        }
+
+                        @Override
+                        public void onDataExited(DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onDataMoved(DataSnapshot dataSnapshot, GeoLocation location) {
+
+                        }
+
+                        @Override
+                        public void onDataChanged(DataSnapshot dataSnapshot, GeoLocation location) {
+
+                        }
+
+                        @Override
+                        public void onGeoQueryReady() {
+
+                        }
+
+                        @Override
+                        public void onGeoQueryError(DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -267,33 +344,6 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
         map.setMapStyle(MapStyleOptions.loadRawResourceStyle(mActivity, R.raw.google_light_map));
         map.setMyLocationEnabled(true);
         detectLocation();
-        /*permission.checkAndAskPermission(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION, new OnPermissionListener() {
-            @SuppressLint("MissingPermission")
-            @Override
-            public void onPermissionGranted() {
-                map.setMyLocationEnabled(true);
-                detectLocation();
-            }
-
-            @Override
-            public void onPermissionDenied() {
-                new AlertDialog.Builder(mActivity)
-                        .setTitle("Permission Needed!")
-                        .setMessage("This feature needs special permission to perform\nPlease Grand Access to use this feature")
-                        .setPositiveButton("Grant Permission", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                onMapReady(map);
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finish();
-                            }
-                        }).show();
-            }
-        });*/
 
     }
 

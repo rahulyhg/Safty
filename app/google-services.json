@@ -1,0 +1,107 @@
+{
+  "project_info": {
+    "project_number": "599426808441",
+    "firebase_url": "https://helpopolice.firebaseio.com",
+    "project_id": "helpopolice",
+    "storage_bucket": "helpopolice.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599426808441:android:d907d0db1534d381",
+        "android_client_info": {
+          "package_name": "com.rvsoft.safty"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599426808441-upjttvboh8ogb21f678i1ed4l0t6gfs2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rvsoft.safty",
+            "certificate_hash": "df30313fbc5eb3bfdb7829a0044705aede09640d"
+          }
+        },
+        {
+          "client_id": "599426808441-0pic51bh05n10mjmtlkvm5q7d9lep7a9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtK93jt_2vj_3hfUYWOwvuXYOtDH1igmg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599426808441-0pic51bh05n10mjmtlkvm5q7d9lep7a9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599426808441:android:126c1ff57c4bc8b8",
+        "android_client_info": {
+          "package_name": "com.rvsoftlab.helpopolice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599426808441-5qgndhsrlee67rpohi3b8il21j1mqhh3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rvsoftlab.helpopolice",
+            "certificate_hash": "a10b8bc5bf5d62a75287783fd58d139e6f1a4e14"
+          }
+        },
+        {
+          "client_id": "599426808441-tsj2qii015128kuf4lpl7flsnhv0utoh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rvsoftlab.helpopolice",
+            "certificate_hash": "df30313fbc5eb3bfdb7829a0044705aede09640d"
+          }
+        },
+        {
+          "client_id": "599426808441-0pic51bh05n10mjmtlkvm5q7d9lep7a9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtK93jt_2vj_3hfUYWOwvuXYOtDH1igmg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599426808441-0pic51bh05n10mjmtlkvm5q7d9lep7a9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

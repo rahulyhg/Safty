@@ -2,11 +2,12 @@ package com.rvsoft.safty.helper;
 
 public class Constant {
     /**
-     * GET METHOD
-     * {0} LAT
+     * GET METHOD<br>
+     * {0} LAT<br>
      * {1} LONG
      */
     public static String POLICE = "https://maps.googleapis.com/maps/api/place/search/json?location={0},{1}&rankby=distance&types=police&sensor=false&key=AIzaSyCOi8IoIkmCvCU73d0KMmZdrlzPszk_qqE";
+
     public interface REQUESTS{
         // PERMISSION RELATED REQUEST STARTS FROM 100 SERIES
         int LOCATION = 100;

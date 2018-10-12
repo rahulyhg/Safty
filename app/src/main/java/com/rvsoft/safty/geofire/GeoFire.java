@@ -28,13 +28,19 @@
 
 package com.rvsoft.safty.geofire;
 
+import android.support.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.rvsoft.safty.geofire.core.GeoHash;
+import com.rvsoft.safty.helper.Helper;
 
 import java.lang.Throwable;
 import java.util.*;
@@ -74,7 +80,7 @@ public class GeoFire {
         }
 
         @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             if (dataSnapshot.getValue() == null) {
                 this.callback.onLocationResult(dataSnapshot.getKey(), null);
             } else {
@@ -98,7 +104,7 @@ public class GeoFire {
         try {
             GenericTypeIndicator<Map<String, Object>> typeIndicator = new GenericTypeIndicator<Map<String, Object>>() {};
             Map<String, Object> data = dataSnapshot.getValue(typeIndicator);
-            List<?> location = (List<?>) data.get("l");
+            List<?> location = (List<?>) data.get("loc");
             Number latitudeObj = (Number) location.get(0);
             Number longitudeObj = (Number) location.get(1);
             double latitude = latitudeObj.doubleValue();
@@ -168,22 +174,29 @@ public class GeoFire {
         if (key == null) {
             throw new NullPointerException();
         }
-        DatabaseReference keyRef = this.getDatabaseRefForKey(key);
-        GeoHash geoHash = new GeoHash(location);
-        Map<String, Object> updates = new HashMap<>();
+        final DatabaseReference keyRef = this.getDatabaseRefForKey(key);
+        final GeoHash geoHash = new GeoHash(location);
+        final Map<String, Object> updates = new HashMap<>();
 
-        updates.put("g", geoHash.getGeoHashString());
-        updates.put("l", Arrays.asList(location.latitude, location.longitude));
-        if (completionListener != null) {
-            keyRef.setValue(updates, geoHash.getGeoHashString(), new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    completionListener.onComplete(key, databaseError);
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                updates.put("uuid", geoHash.getGeoHashString());
+                updates.put("fcm",instanceIdResult.getToken());
+                updates.put("loc", Arrays.asList(location.latitude, location.longitude));
+                updates.put("updated_at",Helper.getCurrentDateTime());
+                if (completionListener != null) {
+                    keyRef.setValue(updates, geoHash.getGeoHashString(), new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            completionListener.onComplete(key, databaseError);
+                        }
+                    });
+                } else {
+                    keyRef.setValue(updates, geoHash.getGeoHashString());
                 }
-            });
-        } else {
-            keyRef.setValue(updates, geoHash.getGeoHashString());
-        }
+            }
+        });
     }
 
     /**
