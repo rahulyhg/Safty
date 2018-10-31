@@ -271,13 +271,45 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback{
             public void onComplete(@NonNull Task<LocationResponse> task) {
                 if (task.isSuccessful()){
                     location = task.getResult().getLocation();
-                    GeoLocation geoLocation = new GeoLocation(location.getLatitude(),location.getLongitude());
-                    GeoQuery geoQuery = geoFire.queryAtLocation(geoLocation,0.6);
+                    final GeoLocation geoLocation = new GeoLocation(location.getLatitude(),location.getLongitude());
+                    final GeoQuery geoQuery = geoFire.queryAtLocation(geoLocation,0.6);
+                    GeoQueryDataEventListener listner = new GeoQueryDataEventListener() {
+                        @Override
+                        public void onDataEntered(DataSnapshot dataSnapshot, GeoLocation location) {
+
+                        }
+
+                        @Override
+                        public void onDataExited(DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onDataMoved(DataSnapshot dataSnapshot, GeoLocation location) {
+
+                        }
+
+                        @Override
+                        public void onDataChanged(DataSnapshot dataSnapshot, GeoLocation location) {
+
+                        }
+
+                        @Override
+                        public void onGeoQueryReady() {
+
+                        }
+
+                        @Override
+                        public void onGeoQueryError(DatabaseError error) {
+
+                        }
+                    };
                     geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
                         @Override
                         public void onDataEntered(DataSnapshot dataSnapshot, GeoLocation location) {
                             Toast.makeText(mActivity, dataSnapshot.getKey(), Toast.LENGTH_SHORT).show();
                             Log.d("TAG",dataSnapshot.getKey());
+                            geoQuery.removeAllListeners();
                         }
 
                         @Override
