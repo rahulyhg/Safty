@@ -1,6 +1,10 @@
 package com.rvsoft.safty.helper;
 
 public class Constant {
+    public static final String SMS_SENDER = "KNAPPS";
+
+    public static final String API = "http://rvsoft.esy.es/Android/helpo/Authentication.php";
+
     /**
      * GET METHOD<br>
      * {0} LAT<br>
@@ -15,6 +19,7 @@ public class Constant {
         int STORAGE = 102;
         int ENABLE_GPS = 103;
         int ALL = 104;
+        int SMS = 105;
 
         // ACTIVITY RESULT REQUEST STARTS FROM 200 SERIES
         int ADD_REQUEST = 200;
@@ -29,4 +34,11 @@ public class Constant {
         int FOREGROUND_SERVICE = 301;
     }
 
+
+    public interface FIREBASE_CHILD{
+        String USER = "user";
+        String LOCATION = "location";
+        String HELPO_REQUEST = "request";
+        String HELP_DETAIL = "helpo";
+    }
 }

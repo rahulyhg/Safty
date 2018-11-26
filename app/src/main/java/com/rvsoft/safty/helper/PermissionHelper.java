@@ -71,13 +71,13 @@ public class PermissionHelper {
                         }).show();
             }else if (session.getPermissionStatus(permission[0])){
                 /**
-                 * Previously Permission Request was canceled with 'Don't ask again'
+                 * Previously Permission Helpo was canceled with 'Don't ask again'
                  * Redirect to setting after showing Information about why permission needed
                  */
                 new FancyAlertDialog.Builder(activity)
                         .setimageResource(R.color.colorAccent)
                         .setTextSubTitle("Permission Needed!")
-                        .setBody("Previously Permission Request was canceled with 'Don't ask again'\nPlease go to Setting and enable permission")
+                        .setBody("Previously Permission Helpo was canceled with 'Don't ask again'\nPlease go to Setting and enable permission")
                         .setPositiveButtonText("GO TO SETTING")
                         .setNegativeButtonText("Cancel")
                         .setOnPositiveClicked(new FancyAlertDialog.OnPositiveClicked() {
@@ -97,7 +97,7 @@ public class PermissionHelper {
                         }).build().show();
             }else {
                 /**
-                 * Just Request Normal Permission
+                 * Just Helpo Normal Permission
                  */
                 session.putPermissionStatus(permission[0],true);
                 ActivityCompat.requestPermissions(activity,permission,requestCode);
